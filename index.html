@@ -1,0 +1,477 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePass | Password Security</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #090b10;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #11141c;
+            border: 1px solid #292e3a;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 15px 50px #0008;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 27px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #9099aa;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #c7cbd4;
+        }
+
+        .input-wrap {
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            min-width: 0;
+            flex: 1;
+            background: #090b10;
+            border: 1px solid #343b49;
+            border-radius: 8px;
+            padding: 13px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #60a5fa;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            filter: brightness(1.15);
+        }
+
+        .toggle {
+            background: #292e3a;
+            color: white;
+        }
+
+        .strength-box {
+            margin: 22px 0;
+            background: #090b10;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid #252b36;
+        }
+
+        .strength-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        #strengthText {
+            color: #9099aa;
+        }
+
+        .bar {
+            height: 6px;
+            background: #292e3a;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #barFill {
+            height: 100%;
+            width: 0%;
+            background: #ef4444;
+            transition: width 0.25s, background 0.25s;
+        }
+
+        .requirements {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .requirements li {
+            font-size: 13px;
+            color: #858d9d;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .requirements li span {
+            font-size: 15px;
+        }
+
+        .requirements li.valid {
+            color: #4ade80;
+        }
+
+        .generate {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            margin-top: 4px;
+        }
+
+        .copy {
+            width: 100%;
+            background: #202632;
+            color: white;
+            border: 1px solid #343b49;
+            margin-top: 10px;
+        }
+
+        .message {
+            min-height: 20px;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 12px;
+            color: #60a5fa;
+        }
+
+        .notice {
+            border-top: 1px solid #292e3a;
+            margin-top: 20px;
+            padding-top: 16px;
+            color: #858d9d;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .notice strong {
+            color: #c7cbd4;
+        }
+
+        footer {
+            text-align: center;
+            color: #626b7b;
+            font-size: 11px;
+            margin-top: 22px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header class="header">
+            <div class="logo">🔐</div>
+            <h1>SecurePass</h1>
+            <p class="subtitle">
+                Build stronger passwords.<br>
+                Protect your digital identity.
+            </p>
+        </header>
+
+        <label for="password">Enter your password</label>
+
+        <div class="input-wrap">
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter a password..."
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="128"
+                aria-describedby="strengthText"
+            >
+            <button class="toggle" id="toggleBtn" type="button">
+                Show
+            </button>
+        </div>
+
+        <section class="strength-box">
+            <div class="strength-top">
+                <span>Password strength</span>
+                <strong id="strengthText">Not checked</strong>
+            </div>
+            <div
+                class="bar"
+                role="progressbar"
+                aria-label="Password strength"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                id="strengthBar"
+            >
+                <div id="barFill"></div>
+            </div>
+        </section>
+
+        <h3 style="font-size:15px; margin-bottom:14px;">
+            Security requirements
+        </h3>
+
+        <ul class="requirements">
+            <li id="lengthReq">
+                <span>○</span> At least 8 characters
+            </li>
+            <li id="upperReq">
+                <span>○</span> At least one uppercase letter (A-Z)
+            </li>
+            <li id="numberReq">
+                <span>○</span> At least one number (0-9)
+            </li>
+            <li id="lowerReq">
+                <span>○</span> At least one lowercase letter (a-z)
+            </li>
+            <li id="symbolReq">
+                <span>○</span> At least one special character (!@#$...)
+            </li>
+            <li id="longReq">
+                <span>○</span> 16 or more characters recommended
+            </li>
+        </ul>
+
+        <button class="generate" id="generateBtn" type="button">
+            Generate Strong Password
+        </button>
+
+        <button class="copy" id="copyBtn" type="button">
+            Copy Password
+        </button>
+
+        <p class="message" id="message" aria-live="polite"></p>
+
+        <div class="notice">
+            <strong>Security tip:</strong>
+            Use a unique password for every account.
+            Longer, randomly generated passwords are generally harder
+            to guess. Store them in a reputable password manager.
+            <br><br>
+            <strong>Privacy:</strong>
+            Password checks happen locally in this page.
+            Your entered password is not sent to a server.
+        </div>
+
+        <footer>
+            SECUREPASS // PASSWORD SECURITY TOOL
+        </footer>
+
+    </main>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const strengthText = document.getElementById("strengthText");
+        const barFill = document.getElementById("barFill");
+        const strengthBar = document.getElementById("strengthBar");
+        const message = document.getElementById("message");
+
+        const requirements = {
+            lengthReq: p => p.length >= 8,
+            upperReq: p => /[A-Z]/.test(p),
+            numberReq: p => /[0-9]/.test(p),
+            lowerReq: p => /[a-z]/.test(p),
+            symbolReq: p => /[^A-Za-z0-9]/.test(p),
+            longReq: p => p.length >= 16
+        };
+
+        function updateRequirement(id, valid) {
+            const element = document.getElementById(id);
+            element.classList.toggle("valid", valid);
+            element.querySelector("span").textContent =
+                valid ? "✓" : "○";
+        }
+
+        function checkPassword() {
+            const password = passwordInput.value;
+
+            for (const [id, test] of Object.entries(requirements)) {
+                updateRequirement(id, test(password));
+            }
+
+            if (!password) {
+                strengthText.textContent = "Not checked";
+                barFill.style.width = "0%";
+                barFill.style.background = "#ef4444";
+                strengthBar.setAttribute("aria-valuenow", "0");
+                message.textContent = "";
+                return;
+            }
+
+            const passed = Object.values(requirements)
+                .filter(test => test(password)).length;
+
+            let score = Math.min(100, passed * 15);
+
+            // Reward additional length and character variety.
+            if (password.length >= 16) score += 10;
+            if (password.length >= 20) score += 10;
+
+            score = Math.min(100, score);
+
+            let label;
+            let color;
+
+            if (
+                password.length < 8 ||
+                !/[A-Z]/.test(password) ||
+                !/[0-9]/.test(password)
+            ) {
+                label = "Weak";
+                color = "#ef4444";
+            } else if (score < 65) {
+                label = "Fair";
+                color = "#f59e0b";
+            } else if (score < 85) {
+                label = "Good";
+                color = "#60a5fa";
+            } else {
+                label = "Strong";
+                color = "#4ade80";
+            }
+
+            strengthText.textContent = label;
+            barFill.style.width = score + "%";
+            barFill.style.background = color;
+            strengthBar.setAttribute("aria-valuenow", score);
+            message.textContent = "";
+        }
+
+        passwordInput.addEventListener("input", checkPassword);
+
+        document.getElementById("toggleBtn")
+            .addEventListener("click", function () {
+                const hidden = passwordInput.type === "password";
+                passwordInput.type = hidden ? "text" : "password";
+                this.textContent = hidden ? "Hide" : "Show";
+            });
+
+        // Use the browser's cryptographically secure random generator.
+        function secureRandomIndex(max) {
+            const limit = Math.floor(4294967296 / max) * max;
+            const buffer = new Uint32Array(1);
+
+            do {
+                crypto.getRandomValues(buffer);
+            } while (buffer[0] >= limit);
+
+            return buffer[0] % max;
+        }
+
+        function secureShuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = secureRandomIndex(i + 1);
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generatePassword() {
+            const groups = [
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "abcdefghijklmnopqrstuvwxyz",
+                "0123456789",
+                "!@#$%^&*()-_=+?"
+            ];
+
+            // Guarantee at least one character from every group.
+            const chars = groups.map(group =>
+                group[secureRandomIndex(group.length)]
+            );
+
+            const allChars = groups.join("");
+
+            while (chars.length < 20) {
+                chars.push(
+                    allChars[secureRandomIndex(allChars.length)]
+                );
+            }
+
+            secureShuffle(chars);
+
+            passwordInput.value = chars.join("");
+            passwordInput.type = "text";
+
+            document.getElementById("toggleBtn").textContent = "Hide";
+
+            checkPassword();
+            message.textContent = "A new password was generated.";
+        }
+
+        document.getElementById("generateBtn")
+            .addEventListener("click", generatePassword);
+
+        document.getElementById("copyBtn")
+            .addEventListener("click", async function () {
+                const password = passwordInput.value;
+
+                if (!password) {
+                    message.textContent = "Enter or generate a password first.";
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(password);
+                    message.textContent = "Password copied to clipboard.";
+                } catch {
+                    // Fallback for browsers that block clipboard access.
+                    passwordInput.type = "text";
+                    passwordInput.focus();
+                    passwordInput.select();
+
+                    const copied = document.execCommand("copy");
+
+                    message.textContent = copied
+                        ? "Password copied to clipboard."
+                        : "Copy manually: select the password and copy it.";
+                }
+            });
+
+        checkPassword();
+    </script>
+</body>
+</html>
